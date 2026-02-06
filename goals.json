@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "goals": [
+    {
+      "id": "tech_automation_weekly",
+      "title": "Automate a weekly task with a simple script",
+      "theme": "tech",
+      "timeframe_weeks": 4,
+      "difficulty": "beginner",
+      "tags": ["tech", "coding", "automation", "productivity"],
+      "description": "Pick one repetitive task (renaming files, organizing notes, cleaning a spreadsheet) and automate it end-to-end.",
+      "first_steps": [
+        "List 3 repetitive tasks you do weekly; pick the smallest one.",
+        "Write the steps manually once to confirm the workflow.",
+        "Implement a minimal script that handles 80% of cases.",
+        "Run it weekly and note 1 improvement each run."
+      ],
+      "resources": [
+        { "label": "Python basics", "url": "https://docs.python.org/3/tutorial/" }
+      ]
+    },
+    {
+      "id": "tech_portfolio_microproject",
+      "title": "Ship a small portfolio project in 10 days",
+      "theme": "career",
+      "timeframe_weeks": 2,
+      "difficulty": "beginner",
+      "tags": ["tech", "career", "portfolio", "project"],
+      "description": "Build a tiny app that solves a real problem for you (tracker, checklist, quiz, habit timer) and publish it.",
+      "first_steps": [
+        "Pick a problem you personally have; write a 1-sentence goal.",
+        "Define a 5-feature limit and a 10-day schedule.",
+        "Build v1 with a simple UI and one main flow.",
+        "Publish and write a short 'what I learned' note."
+      ],
+      "resources": [
+        { "label": "Streamlit docs", "url": "https://docs.streamlit.io/" }
+      ]
+    },
+    {
+      "id": "health_strength_4_weeks",
+      "title": "Start a 4-week beginner strength routine",
+      "theme": "health",
+      "timeframe_weeks": 4,
+      "difficulty": "beginner",
+      "tags": ["health", "fitness", "habit", "strength"],
+      "description": "Follow a simple 3x/week routine and track progress on 2–3 movements.",
+      "first_steps": [
+        "Pick 3 movements you can do safely (squat variation, push, pull).",
+        "Schedule 3 sessions per week for 30 minutes.",
+        "Track reps/sets and keep effort moderate.",
+        "Review weekly: adjust only one variable (weight or reps)."
+      ],
+      "resources": [
+        { "label": "General exercise guidelines", "url": "https://www.cdc.gov/physicalactivity/basics/index.htm" }
+      ]
+    },
+    {
+      "id": "health_sleep_reset",
+      "title": "Run a 2-week sleep reset experiment",
+      "theme": "health",
+      "timeframe_weeks": 2,
+      "difficulty": "beginner",
+      "tags": ["health", "sleep", "habit", "energy"],
+      "description": "Test 2–3 small sleep changes and track how you feel daily.",
+      "first_steps": [
+        "Set a consistent wake-up time for 14 days.",
+        "Choose 2 changes (no caffeine after 2pm, 20-min wind-down).",
+        "Track bedtime, wake time, and energy (1–5) daily.",
+        "Keep what works; drop what doesn't."
+      ],
+      "resources": [
+        { "label": "Sleep basics", "url": "https://www.sleepfoundation.org/" }
+      ]
+    },
+    {
+      "id": "finance_budget_basics",
+      "title": "Set up a simple budget you can maintain",
+      "theme": "finance",
+      "timeframe_weeks": 3,
+      "difficulty": "beginner",
+      "tags": ["finance", "budgeting", "planning", "stability"],
+      "description": "Create a lightweight system to track spending and plan bills without perfectionism.",
+      "first_steps": [
+        "List recurring bills and due dates in one place.",
+        "Pick a weekly spending check-in time (10 minutes).",
+        "Track only 3 categories that matter to you.",
+        "Automate bill reminders and set a small buffer goal."
+      ],
+      "resources": [
+        { "label": "Budgeting guide (general)", "url": "https://consumer.gov/articles/1002-making-budget" }
+      ]
+    },
+    {
+      "id": "career_networking_starter",
+      "title": "Build a low-pressure networking habit",
+      "theme": "career",
+      "timeframe_weeks": 4,
+      "difficulty": "beginner",
+      "tags": ["career", "community", "communication", "confidence"],
+      "description": "Reach out to 1 person per week and have one short conversation to learn about their path.",
+      "first_steps": [
+        "Write a 3-sentence message template that feels natural.",
+        "Make a list of 10 people (friends-of-friends, alumni, creators).",
+        "Schedule one 15-minute chat per week.",
+        "Capture notes: what they do, what surprised you, next step."
+      ],
+      "resources": [
+        { "label": "Informational interview tips", "url": "https://hbr.org/2016/02/how-to-get-the-most-out-of-an-informational-interview" }
+      ]
+    },
+    {
+      "id": "community_local_commit",
+      "title": "Join one community and show up twice",
+      "theme": "community",
+      "timeframe_weeks": 4,
+      "difficulty": "beginner",
+      "tags": ["community", "social", "confidence", "belonging"],
+      "description": "Pick a local or online group that matches your interests and attend two events to reduce friction.",
+      "first_steps": [
+        "Pick one topic you care about (tech, art, running, volunteering).",
+        "Find one group and RSVP to an event.",
+        "Decide a 'minimum success' goal (say hi to 1 person).",
+        "Attend a second time within 2 weeks."
+      ],
+      "resources": [
+        { "label": "Meetup (find events)", "url": "https://www.meetup.com/" }
+      ]
+    }
+  ]
+}
+
