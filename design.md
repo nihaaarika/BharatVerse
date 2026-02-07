@@ -1,108 +1,477 @@
-# Goal Detector — Project Doc (Day 1–2)
+# Design Document: Goal Detector
 
-## Core Problem + Value Proposition
-Many people (students, career changers, early-career professionals) want to “get better” or “pick a direction,” but struggle to translate vague interests into concrete, realistic goals. The pain point is decision paralysis: too many options, unclear next steps, and low confidence that a chosen goal fits their interests and constraints. **Goal Detector** solves this by asking a short, friendly questionnaire and turning answers into a small set of personalized, actionable goals (with reasons and first steps). The result is faster clarity and a starter plan—making learning and planning more accessible and less overwhelming.
+## Overview
 
-## Target Users
-- Students exploring majors/careers
-- Career changers seeking a new direction
-- Self-learners who feel stuck or scattered
-- Busy adults who need time-bounded, realistic goals
+Goal Detector is a session-based web application that guides users through a reflective questionnaire and generates personalized learning/career roadmaps using AI analysis. The system follows a linear flow: questionnaire → analysis → roadmap presentation. All data exists only in memory during the session, ensuring privacy. The application emphasizes encouragement and beginner-friendly language throughout the user experience.
 
-## One-Paragraph Pitch
-Goal Detector uses AI-inspired matching to analyze your signup questionnaire and suggest personalized goals based on your interests, constraints, and preferred learning style. Instead of a generic list, it returns a short set of goals with a clear “why this fits you” explanation and first steps—helping you move from uncertainty to an actionable plan in minutes.
+**Key Design Principles:**
+- Privacy-first: No data persistence beyond the session
+- Simplicity: Linear flow with clear progression
+- Encouragement: Positive reinforcement at every stage
+- Accessibility: Beginner-friendly language and interface
 
-## Key Features (Essentials First)
-### MVP (must-have)
-- Simple signup (name/email optional) → questionnaire → results
-- 8–10 short questions (mix of multiple choice + short text)
-- Theme extraction (identify user interests + constraints)
-- 3–5 ranked goal suggestions
-- Each goal includes: short explanation + 2–4 first steps
-- Fallback when answers are vague (generic starter goals)
+## Architecture
 
-### Nice-to-have (after MVP)
-- “Why this goal fits” expanded explanation
-- Resource links per goal (courses, communities, templates)
-- Let users save/export results (download JSON)
-- Ask 1 follow-up question when confidence is low
-- Feedback buttons (“relevant” / “not relevant”) to iterate quickly
+The application follows a client-server architecture with three main layers:
 
-## Research + Inspiration (What to Borrow)
-- **Career quizzes** (LinkedIn-style): short, high-signal questions; quick results
-- **Personality tests** (MBTI-style): engaging tone; “you might like…” framing
-- **Recommendation interfaces**: card layout; strong summaries; consistent formatting
+```
+┌─────────────────────────────────────────┐
+│         Presentation Layer              │
+│  (UI Components, State Management)      │
+└─────────────────────────────────────────┘
+                  ↓
+┌─────────────────────────────────────────┐
+│         Application Layer               │
+│  (Questionnaire Logic, Session Mgmt)    │
+└─────────────────────────────────────────┘
+                  ↓
+┌─────────────────────────────────────────┐
+│         AI Analysis Layer               │
+│  (Response Processing, Roadmap Gen)     │
+└─────────────────────────────────────────┘
+```
 
-## Sample Questionnaire (10 Questions)
-1) What best describes you right now? (student / employed / career change / other)
-2) What are you most interested in? (multi-select: tech, design, business, health, finance, community, creative, other)
-3) Pick 2–3 topics you enjoy most (free text)
-4) What outcome do you want in the next 3 months? (skill / project / habit / job prep / explore)
-5) Time available per week? (0–2, 3–5, 6–10, 10+ hours)
-6) Your preferred style? (hands-on project / structured course / reading / coaching)
-7) What constraints matter most? (money, time, device, schedule, anxiety, none)
-8) What motivates you? (curiosity / career impact / health / social / creativity)
-9) Do you want community involvement? (solo / small group / public community)
-10) Any “hard no’s”? (free text; e.g., “no public speaking”)
+**Layer Responsibilities:**
 
-## Example Goal Themes + Goal Outputs (Samples)
-### Themes
-- Tech (coding, data, automation)
-- Health (fitness, nutrition, sleep)
-- Finance (budgeting, investing basics)
-- Career (portfolio, interviewing, networking)
-- Community (volunteering, local groups)
+1. **Presentation Layer**: Renders UI, handles user input, displays progress and results
+2. **Application Layer**: Manages questionnaire flow, validates responses, maintains session state
+3. **AI Analysis Layer**: Processes responses, identifies themes, generates personalized roadmaps
 
-### Example Goals
-- “Build a small automation script you’ll actually use weekly”
-- “Create a 4-week beginner strength routine and track progress”
-- “Set up a simple budget and automate bill tracking”
-- “Ship a portfolio project and write a short case study”
-- “Join one community group and attend 2 events this month”
+**Data Flow:**
+1. User starts session → Initialize empty session state
+2. User answers questions → Responses stored in session state
+3. Questionnaire complete → Responses sent to AI analyzer
+4. AI generates roadmap → Roadmap displayed to user
+5. Session ends → All data discarded
 
-## Success Metrics (MVP)
-- **Relevance**: user rates at least 1 goal as “highly relevant”
-- **Clarity**: user can explain why a goal was suggested (from the UI)
-- **Completion intent**: user picks at least 1 goal to try next week
-- **Time-to-value**: user reaches results in under ~2 minutes
+## Components and Interfaces
 
-## Rough Timeline
-- Day 1: pitch + features + sample questions/goals + repo skeleton
-- Day 2: user journey + wireframes + AI logic flow + Streamlit MVP
+### 1. Session Manager
 
----
+**Responsibility:** Manages the lifecycle of a user session and maintains state.
 
-## Phase 2 (Day 2): Structure + UX
-### User Journey Map
-1) Welcome / signup (name optional)
-2) Questionnaire (short, engaging; progress indicator)
-3) “Processing” state (short loading text)
-4) Results page (ranked goal cards)
-5) User picks a goal + downloads plan (optional)
+**Interface:**
+```
+SessionManager {
+  startSession() → SessionId
+  getSessionState(sessionId: SessionId) → SessionState
+  updateSessionState(sessionId: SessionId, state: SessionState) → void
+  endSession(sessionId: SessionId) → void
+}
+```
 
-### Questionnaire Design Notes
-- 2–3 basics (context, time, constraints)
-- 3–5 interests (mix of multi-select + open text)
-- 1–2 aspirations (time horizon + motivation)
-- Neutral phrasing (“What sounds appealing?”) to reduce bias
+**Behavior:**
+- Creates new session with unique identifier
+- Stores session state in memory (no persistence)
+- Provides access to current session state
+- Cleans up session data on end
 
-### AI Logic Flow (No Tech Details)
-1) Collect responses
-2) Detect themes (interests + constraints + motivation)
-3) Match themes to goal categories (predefined templates)
-4) Rank 3–5 goals by relevance and feasibility
-5) Add value: “why it fits” + first steps + resources
-6) Fallback: if confidence is low, provide starter goals and ask follow-up
+### 2. Questionnaire Controller
 
-### Wireframe (Text)
-- **Welcome**: title + “Start” button
-- **Questions**: one form, grouped sections; progress indicator
-- **Processing**: spinner + “Finding goals that match your interests…”
-- **Results**: cards with title, why, timeframe, steps, resources; “Try this goal” button
+**Responsibility:** Manages questionnaire flow and response collection.
 
-### Ethics + Edge Cases
-- Privacy: don’t store personal data for MVP; keep everything in-session
-- Inclusivity: avoid stereotyping; let users choose categories; allow “other”
-- Safety: avoid medical/financial advice language; “educational suggestions” disclaimer
-- Low-signal inputs: show generic goals + ask one clarifying question
+**Interface:**
+```
+QuestionnaireController {
+  getCurrentQuestion(sessionId: SessionId) → Question
+  submitResponse(sessionId: SessionId, response: Response) → ValidationResult
+  getProgress(sessionId: SessionId) → Progress
+  isComplete(sessionId: SessionId) → boolean
+  getAllResponses(sessionId: SessionId) → Response[]
+}
+```
 
+**Behavior:**
+- Tracks current question index
+- Validates responses before acceptance
+- Advances to next question on valid submission
+- Provides progress information
+- Determines when questionnaire is complete
+
+### 3. Response Validator
+
+**Responsibility:** Validates user responses according to defined rules.
+
+**Interface:**
+```
+ResponseValidator {
+  validate(response: Response) → ValidationResult
+  isEmpty(response: Response) → boolean
+  isValidLength(response: Response) → boolean
+}
+```
+
+**Validation Rules:**
+- Response must not be empty (after trimming whitespace)
+- Response must be within reasonable length (e.g., 1-1000 characters)
+- Response must contain valid characters
+
+### 4. AI Analyzer
+
+**Responsibility:** Processes user responses and generates personalized recommendations.
+
+**Interface:**
+```
+AIAnalyzer {
+  analyzeResponses(responses: Response[]) → AnalysisResult
+  identifyThemes(responses: Response[]) → Theme[]
+  assessMotivation(responses: Response[]) → MotivationLevel
+  extractConstraints(responses: Response[]) → Constraints
+}
+```
+
+**Analysis Process:**
+1. Parse all responses to extract key information
+2. Identify recurring themes and interests
+3. Assess time constraints and commitment level
+4. Evaluate current skill level and experience
+5. Determine motivation and desired outcomes
+
+### 5. Roadmap Generator
+
+**Responsibility:** Creates structured, personalized roadmaps from analysis results.
+
+**Interface:**
+```
+RoadmapGenerator {
+  generateRoadmap(analysis: AnalysisResult) → Roadmap
+  createSteps(themes: Theme[], constraints: Constraints) → Step[]
+  addEncouragement(roadmap: Roadmap) → Roadmap
+  formatForDisplay(roadmap: Roadmap) → FormattedRoadmap
+}
+```
+
+**Generation Process:**
+1. Create logical sequence of steps based on themes
+2. Adjust complexity based on skill level
+3. Consider time constraints in step sizing
+4. Add encouraging messages and positive framing
+5. Format for readability
+
+### 6. UI Renderer
+
+**Responsibility:** Renders user interface components and handles user interactions.
+
+**Interface:**
+```
+UIRenderer {
+  renderQuestion(question: Question, progress: Progress) → void
+  renderError(error: Error) → void
+  renderLoadingState() → void
+  renderRoadmap(roadmap: FormattedRoadmap) → void
+  captureUserInput() → string
+}
+```
+
+**UI States:**
+- Question display with progress indicator
+- Loading state during AI analysis
+- Roadmap display with formatted content
+- Error display with recovery options
+
+## Data Models
+
+### Question
+```
+Question {
+  id: string
+  text: string
+  category: QuestionCategory
+  order: number
+}
+
+QuestionCategory = "interests" | "goals" | "constraints" | "skills" | "motivation"
+```
+
+### Response
+```
+Response {
+  questionId: string
+  text: string
+  timestamp: Date
+}
+```
+
+### SessionState
+```
+SessionState {
+  sessionId: string
+  currentQuestionIndex: number
+  responses: Response[]
+  status: SessionStatus
+  createdAt: Date
+}
+
+SessionStatus = "active" | "analyzing" | "complete" | "error"
+```
+
+### AnalysisResult
+```
+AnalysisResult {
+  themes: Theme[]
+  motivationLevel: MotivationLevel
+  constraints: Constraints
+  skillLevel: SkillLevel
+  recommendations: string[]
+}
+
+Theme {
+  name: string
+  confidence: number
+  relatedResponses: string[]
+}
+
+MotivationLevel = "high" | "moderate" | "exploratory"
+
+Constraints {
+  timeAvailable: string
+  commitmentLevel: string
+  startDate: string
+}
+
+SkillLevel = "beginner" | "intermediate" | "advanced"
+```
+
+### Roadmap
+```
+Roadmap {
+  title: string
+  introduction: string
+  steps: Step[]
+  encouragement: string[]
+  disclaimer: string
+}
+
+Step {
+  order: number
+  title: string
+  description: string
+  estimatedTime: string
+  resources: string[]
+}
+```
+
+### ValidationResult
+```
+ValidationResult {
+  isValid: boolean
+  errors: string[]
+}
+```
+
+## Correctness Properties
+
+*A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+
+
+### Property 1: Response Validation Consistency
+*For any* string input, the validation result should correctly identify whether it is non-empty (after trimming whitespace) and within acceptable length bounds.
+
+**Validates: Requirements 1.2, 2.1**
+
+### Property 2: Question Progression
+*For any* valid response submitted at any question position (except the last), the system should advance to the next sequential question.
+
+**Validates: Requirements 1.3**
+
+### Property 3: Progress Calculation Accuracy
+*For any* question position in the questionnaire, the progress indicator should accurately reflect the percentage of completion (current position / total questions).
+
+**Validates: Requirements 1.5**
+
+### Property 4: Response Storage Round-Trip
+*For any* valid response submitted to the system, retrieving the responses from the session should include that exact response with matching content and question ID.
+
+**Validates: Requirements 2.3, 2.4**
+
+### Property 5: Complete Response Processing
+*For any* complete set of questionnaire responses, the AI analyzer should receive and process all responses without omission.
+
+**Validates: Requirements 3.1**
+
+### Property 6: Recommendation Generation
+*For any* valid analysis result, the roadmap generator should produce a non-empty set of recommendations.
+
+**Validates: Requirements 3.5**
+
+### Property 7: Roadmap Structure Integrity
+*For any* generated roadmap, the steps should have sequential order numbers starting from 1 with no gaps, and the roadmap should contain all required fields (title, introduction, steps, encouragement, disclaimer).
+
+**Validates: Requirements 4.1, 4.2**
+
+### Property 8: Encouragement Presence
+*For any* generated roadmap, the encouragement field should be non-empty and contain at least one positive reinforcement message.
+
+**Validates: Requirements 5.1**
+
+### Property 9: Session Isolation
+*For any* two sessions created sequentially, ending the first session and starting a second session should result in the second session having no access to the first session's data, and the second session should start with clean/empty state.
+
+**Validates: Requirements 6.1, 6.2, 6.5**
+
+### Property 10: Error State Preservation
+*For any* session state and any error that occurs during processing, if the error is recoverable, the session state should remain unchanged from its pre-error state.
+
+**Validates: Requirements 9.3**
+
+### Property 11: Error Message Safety
+*For any* error that occurs in the system, the user-facing error message should not contain technical implementation details such as stack traces, file paths, or internal variable names.
+
+**Validates: Requirements 9.4**
+
+## Error Handling
+
+The system implements a layered error handling strategy:
+
+### Error Categories
+
+1. **Validation Errors**: User input that doesn't meet requirements
+   - Empty responses
+   - Responses exceeding length limits
+   - Invalid characters
+   - **Handling**: Display friendly prompt, allow retry, maintain session state
+
+2. **AI Analysis Errors**: Failures in the AI processing layer
+   - API timeouts
+   - Service unavailability
+   - Invalid responses from AI service
+   - **Handling**: Display user-friendly error, offer retry option, log technical details
+
+3. **Network Errors**: Connectivity issues
+   - Connection timeout
+   - DNS resolution failure
+   - Service unreachable
+   - **Handling**: Inform user of connectivity issue, suggest retry, maintain session state
+
+4. **System Errors**: Unexpected application errors
+   - Null reference errors
+   - Unexpected state transitions
+   - Memory issues
+   - **Handling**: Log error details, display generic error message, provide restart instructions
+
+### Error Recovery Strategy
+
+**Recoverable Errors** (validation, network, AI service):
+- Preserve current session state
+- Display specific, actionable error message
+- Provide retry mechanism
+- Log error for debugging
+
+**Unrecoverable Errors** (system crashes, memory exhaustion):
+- Log complete error details
+- Display generic error message without technical details
+- Provide clear restart instructions
+- Clean up session resources
+
+### Error Message Guidelines
+
+- Use plain language, avoid technical jargon
+- Be specific about what went wrong
+- Provide actionable next steps
+- Maintain encouraging tone even in errors
+- Never expose stack traces, file paths, or internal details to users
+
+## Testing Strategy
+
+The Goal Detector application will employ a dual testing approach combining unit tests for specific scenarios and property-based tests for universal correctness properties.
+
+### Testing Framework Selection
+
+**Property-Based Testing Library**: 
+- For JavaScript/TypeScript: **fast-check**
+- For Python: **Hypothesis**
+
+Each property test will run a minimum of 100 iterations to ensure comprehensive input coverage through randomization.
+
+### Unit Testing Focus
+
+Unit tests will verify:
+- **Specific examples**: Concrete scenarios like application startup showing first question
+- **Edge cases**: Empty input handling, boundary conditions
+- **Integration points**: Component interactions and data flow
+- **Error conditions**: Specific error scenarios and recovery
+
+**Example Unit Tests**:
+- Application initialization displays first question (Req 1.1)
+- Empty response triggers helpful prompt (Req 2.2)
+- Questionnaire completion triggers analysis (Req 1.4)
+- UI displays one question at a time (Req 7.1)
+- Loading indicator shown during analysis (Req 7.5)
+- Disclaimer present in roadmap (Req 8.1)
+- Questionnaire includes all required categories (Req 10.1-10.5)
+- Specific error types produce appropriate messages (Req 9.1, 9.2, 9.5)
+
+### Property-Based Testing Focus
+
+Property tests will verify universal properties across all inputs:
+
+**Property Test 1: Response Validation Consistency**
+- **Tag**: Feature: goal-detector, Property 1: Response Validation Consistency
+- **Test**: Generate random strings (empty, whitespace, valid, too long) and verify validation correctly identifies each category
+- **Iterations**: 100+
+
+**Property Test 2: Question Progression**
+- **Tag**: Feature: goal-detector, Property 2: Question Progression
+- **Test**: Generate random valid responses at various question positions, verify next question is displayed
+- **Iterations**: 100+
+
+**Property Test 3: Progress Calculation Accuracy**
+- **Tag**: Feature: goal-detector, Property 3: Progress Calculation Accuracy
+- **Test**: Generate random question positions, verify progress percentage is correct
+- **Iterations**: 100+
+
+**Property Test 4: Response Storage Round-Trip**
+- **Tag**: Feature: goal-detector, Property 4: Response Storage Round-Trip
+- **Test**: Generate random responses, submit them, verify all can be retrieved with exact content
+- **Iterations**: 100+
+
+**Property Test 5: Complete Response Processing**
+- **Tag**: Feature: goal-detector, Property 5: Complete Response Processing
+- **Test**: Generate random complete response sets, verify analyzer receives all responses
+- **Iterations**: 100+
+
+**Property Test 6: Recommendation Generation**
+- **Tag**: Feature: goal-detector, Property 6: Recommendation Generation
+- **Test**: Generate random analysis results, verify recommendations are non-empty
+- **Iterations**: 100+
+
+**Property Test 7: Roadmap Structure Integrity**
+- **Tag**: Feature: goal-detector, Property 7: Roadmap Structure Integrity
+- **Test**: Generate random roadmaps, verify sequential ordering and required fields
+- **Iterations**: 100+
+
+**Property Test 8: Encouragement Presence**
+- **Tag**: Feature: goal-detector, Property 8: Encouragement Presence
+- **Test**: Generate random roadmaps, verify encouragement field is non-empty
+- **Iterations**: 100+
+
+**Property Test 9: Session Isolation**
+- **Tag**: Feature: goal-detector, Property 9: Session Isolation
+- **Test**: Create random sessions with random data, verify no data leakage between sessions
+- **Iterations**: 100+
+
+**Property Test 10: Error State Preservation**
+- **Tag**: Feature: goal-detector, Property 10: Error State Preservation
+- **Test**: Generate random session states and recoverable errors, verify state unchanged
+- **Iterations**: 100+
+
+**Property Test 11: Error Message Safety**
+- **Tag**: Feature: goal-detector, Property 11: Error Message Safety
+- **Test**: Generate random errors, verify user messages contain no technical details
+- **Iterations**: 100+
+
+### Test Coverage Goals
+
+- **Unit Test Coverage**: 80%+ of code paths
+- **Property Test Coverage**: All correctness properties from design
+- **Integration Tests**: Critical user flows (questionnaire → analysis → roadmap)
+- **Error Scenarios**: All error categories with recovery paths
+
+### Testing Best Practices
+
+- Keep unit tests focused on single concerns
+- Use property tests for comprehensive input coverage
+- Mock AI service calls for deterministic testing
+- Test error paths as thoroughly as happy paths
+- Maintain fast test execution (< 5 seconds for full suite)
+- Use descriptive test names that explain what is being verified
