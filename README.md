@@ -1,7 +1,7 @@
 # Goal Detector 🎯
 
-**Live Demo:**  
-👉 https://bharatverse-dkwxkxhhgnmnqwarbhx449.streamlit.app/
+[🚀 Live Demo](https://bharatverse-dkwxkxhhgnmnqwarbhx449.streamlit.app/)
+
 
 Goal Detector is a student-friendly AI-powered goal and career discovery assistant.
 
