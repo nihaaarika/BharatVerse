@@ -13,3 +13,5 @@ It helps users:
 
 ## Hackathon Track
 AI for Learning & Developer Productivity
+
+PPT: https://drive.google.com/file/d/11UQ5d54YM8VsQoJNgr90FfzlUF-bCZPX/view?usp=sharing
